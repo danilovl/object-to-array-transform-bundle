@@ -1,0 +1,19 @@
+{
+    "name": "danilovl/object-to-array-transform-bundle",
+    "type": "symfony-bundle",
+    "description": "Symfony bundle provides convert object to an array by configuration fields.",
+    "keywords": ["php","symfony","bundle"],
+    "authors": [
+        {
+            "name": "Vladimir Danilov"
+        }
+    ],
+    "autoload": {
+        "psr-4": { "Danilovl\\ObjectToArrayTransformBundle\\": "src/" }
+    },
+    "require": {
+        "php": "^7.3.0",
+        "symfony/framework-bundle": ">=4.4",
+        "danilovl/danilovl/parameter-bundle": "^1.1.0"
+    }
+}
