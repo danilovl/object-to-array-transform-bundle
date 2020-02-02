@@ -14,6 +14,6 @@
     "require": {
         "php": "^7.3.0",
         "symfony/framework-bundle": ">=4.4",
-        "danilovl/danilovl/parameter-bundle": "^1.1.1"
+        "danilovl/danilovl/parameter-bundle": ">=1.1.1"
     }
 }
