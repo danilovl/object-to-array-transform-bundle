@@ -5,32 +5,18 @@ namespace Danilovl\ObjectToArrayTransformBundle\Services;
 use Danilovl\ParameterBundle\Services\ParameterService;
 use DateTime;
 use ReflectionClass;
-use ReflectionException;
 use RuntimeException;
 use Traversable;
 
 class ObjectToArrayTransformService
 {
-    /**
-     * @var ParameterService
-     */
-    private $parameterService;
+	private ParameterService $parameterService;
 
-    /**
-     * @param ParameterService $parametersService
-     */
     public function __construct(ParameterService $parametersService)
     {
         $this->parameterService = $parametersService;
     }
 
-    /**
-     * @param string $source
-     * @param $object
-     * @param array|null $objectFields
-     * @return array
-     * @throws ReflectionException
-     */
     public function transform(
         string $source,
         $object,

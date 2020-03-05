@@ -8,9 +8,6 @@ use Symfony\Component\HttpKernel\Bundle\Bundle;
 
 class ObjectToArrayTransformBundle extends Bundle
 {
-    /**
-     * @return ObjectToArrayTransformExtension
-     */
     public function getContainerExtension(): ObjectToArrayTransformExtension
     {
         return new ObjectToArrayTransformExtension;

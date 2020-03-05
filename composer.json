@@ -12,8 +12,8 @@
         "psr-4": { "Danilovl\\ObjectToArrayTransformBundle\\": "src/" }
     },
     "require": {
-        "php": "^7.3.0",
-        "symfony/framework-bundle": ">=4.4",
-        "danilovl/parameter-bundle": ">=1.1.1"
+        "php": "^7.4.0",
+        "symfony/framework-bundle": "^5.0",
+        "danilovl/parameter-bundle": "^2.0.0"
     }
 }
