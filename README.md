@@ -60,33 +60,23 @@ class Shop
     use LocationTrait;
 
     /**
-     * @var string|null
-     *
      * @ORM\Column(name="name", type="string", length=255, nullable=false)
      */
-    private $name;
+    private ?string $name = null;
 
     /**
-     * @var City|null
-     *
      * @ORM\ManyToOne(targetEntity="App\Entity\City", inversedBy="shops")
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="id_city", referencedColumnName="id", nullable=false)
      * })
      */
-    private $city;
+    private ?City $city = null;
 
-    /**
-     * @return string|null
-     */
     public function getName(): ?string
     {
         return $this->name;
     }
 
-    /**
-     * @return City|null
-     */
     public function getCity(): ?City
     {
         return $this->city;
@@ -125,15 +115,10 @@ class City
     use LocationTrait;
 
     /**
-     * @var string|null
-     *
      * @ORM\Column(name="name", type="string", nullable=false)
      */
-    protected $name;
+    protected ?string $name = null;
 
-    /**
-     * @return string|null
-     */
     public function getName(): ?string
     {
         return $this->name;
@@ -170,45 +155,30 @@ class Country
     use TimestampAbleTrait;
 
     /**
-     * @var string|null
-     *
      * @ORM\Column(name="name", type="string", nullable=false)
      */
-    protected $name;
+    protected ?string $name = null;
 
     /**
-     * @var string|null
-     *
      * @ORM\Column(name="code", type="string", nullable=false)
      */
-    protected $code;
+    protected ?string $code = null;
 
     /**
-     * @var Collection|City[]
-     *
      * @ORM\OneToMany(targetEntity="App\Entity\City", mappedBy="country")
      */
-    protected $cities;
+    protected Collection $cities;
 
-    /**
-     * @return string|null
-     */
     public function getName(): ?string
     {
         return $this->name;
     }
 
-     /**
-     * @return string|null
-     */
     public function getCode(): ?string
     {
         return $this->code;
     }
 
-    /**
-     * @return Collection|City[]
-     */
     public function getCities(): Collection
     {
         return $this->cities;
@@ -296,10 +266,6 @@ use Symfony\Component\HttpFoundation\Request;
 
 class CountryController extends AbstractController
 {
- /**
-     * @return JsonResponse
-     * @throws ReflectionException
-     */
     public function getMethod(): JsonResponse
     {
         $countries = $this->get('app.facade.country')
