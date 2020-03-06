@@ -97,10 +97,6 @@ use App\Entity\Traits\{
     LocationTrait,
     TimestampAbleTrait
 };
-use Doctrine\Common\Collections\{
-    Collection,
-    ArrayCollection
-};
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -257,12 +253,8 @@ Transform objects in controller.
 
 namespace App\Controller\Api;
 
-use Doctrine\Common\Collections\Collection;
-use Doctrine\ORM\Query;
 use Knp\Component\Pager\Pagination\PaginationInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\Form\FormInterface;
-use Symfony\Component\HttpFoundation\Request;
 
 class CountryController extends AbstractController
 {
@@ -283,4 +275,3 @@ class CountryController extends AbstractController
     }
 }
 ```
- 
