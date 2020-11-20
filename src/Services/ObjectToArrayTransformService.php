@@ -10,7 +10,7 @@ use Traversable;
 
 class ObjectToArrayTransformService
 {
-	private ParameterService $parameterService;
+    private ParameterService $parameterService;
 
     public function __construct(ParameterService $parametersService)
     {
@@ -29,7 +29,7 @@ class ObjectToArrayTransformService
                 ->get("{$source}.{$fieldValueClass}.fields");
 
         if ($objectFields === null) {
-            throw new RuntimeException(sprintf('Object "%s" is not defined for transformation.', $fieldValueClass));
+            throw new RuntimeException(sprintf('Object fields for class "%s" is not defined for transformation.', $fieldValueClass));
         }
 
         $objectsName = $this->parameterService->get($source);
