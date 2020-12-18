@@ -10,11 +10,8 @@ use Traversable;
 
 class ObjectToArrayTransformService
 {
-    private ParameterService $parameterService;
-
-    public function __construct(ParameterService $parametersService)
+    public function __construct(private ParameterService $parameterService)
     {
-        $this->parameterService = $parametersService;
     }
 
     public function transform(
