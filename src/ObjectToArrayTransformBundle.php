@@ -3,7 +3,6 @@
 namespace Danilovl\ObjectToArrayTransformBundle;
 
 use Danilovl\ObjectToArrayTransformBundle\DependencyInjection\ObjectToArrayTransformExtension;
-use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 
 class ObjectToArrayTransformBundle extends Bundle

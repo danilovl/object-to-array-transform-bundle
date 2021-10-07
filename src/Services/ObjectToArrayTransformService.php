@@ -16,7 +16,7 @@ class ObjectToArrayTransformService
 
     public function transform(
         string $source,
-        $object,
+        string|object $object,
         array $objectFields = null
     ): array {
         $result = [];

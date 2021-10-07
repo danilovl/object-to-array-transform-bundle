@@ -1,3 +1,5 @@
+[![phpunit](https://github.com/danilovl/object-to-array-transform-bundle/actions/workflows/phpunit.yml/badge.svg)](https://github.com/danilovl/object-to-array-transform-bundle/actions/workflows/phpunit.yml)
+
 # ObjectToArrayTransformBundle #
 
 ## About ##
