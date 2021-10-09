@@ -1,4 +1,7 @@
 [![phpunit](https://github.com/danilovl/object-to-array-transform-bundle/actions/workflows/phpunit.yml/badge.svg)](https://github.com/danilovl/object-to-array-transform-bundle/actions/workflows/phpunit.yml)
+[![downloads](https://img.shields.io/packagist/dt/danilovl/object-to-array-transform-bundle)](https://packagist.org/packages/danilovl/object-to-array-transform-bundle)
+[![latest Stable Version](https://img.shields.io/packagist/v/danilovl/object-to-array-transform-bundle)](https://packagist.org/packages/danilovl/object-to-array-transform-bundle)
+[![license](https://img.shields.io/packagist/l/danilovl/object-to-array-transform-bundle)](https://packagist.org/packages/danilovl/object-to-array-transform-bundle)
 
 # ObjectToArrayTransformBundle #
 
@@ -277,3 +280,7 @@ class CountryController extends AbstractController
     }
 }
 ```
+
+## License
+
+The ObjectToArrayTransformBundle is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).

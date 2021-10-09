@@ -3,6 +3,7 @@
     "type": "symfony-bundle",
     "description": "Symfony bundle provides convert object to an array by configuration fields.",
     "keywords": ["php","symfony","bundle"],
+    "license": "MIT",
     "authors": [
         {
             "name": "Vladimir Danilov"
