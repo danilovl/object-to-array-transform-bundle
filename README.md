@@ -226,30 +226,33 @@ parameters:
     default:
       parameters:
         date_format: 'Y-m-d H:i:s'
-      
+
       Shop:
         fields:
           - id
           - name
-          - city:
+          - city
+          - active:
+              parameters:
+                method: 'isActive'
       City:
         fields:
           - id
           - name
           - latitude
-          - longitude    
+          - longitude
       Country:
         fields:
           - id
           - name
           - code
           - cities
-              fields:
+            fields:
                 - id
-                - name
-                - createdAt:
-                    parameters:
-                      format: 'Y-m-d'
+                  - name
+                  - createdAt:
+                      parameters:
+                        format: 'Y-m-d'
 ```
    
 #### 2.1 Usage

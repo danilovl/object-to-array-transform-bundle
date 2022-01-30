@@ -50,7 +50,7 @@ class ObjectToArrayTransformService implements ObjectToArrayTransformServiceInte
 
             $isFieldExist = false;
             $fieldValue = null;
-            $getMethod = 'get' . ucfirst($field);
+            $getMethod = $fieldParameters['method'] ?? 'get' . ucfirst($field);
 
             if (method_exists($object, $field)) {
                 $fieldValue = call_user_func_array([$object, $field], []);
