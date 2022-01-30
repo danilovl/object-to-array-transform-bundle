@@ -224,6 +224,9 @@ You can specify the format for `DateTime`.
 parameters:
   api_fields:
     default:
+      parameters:
+        date_format: 'Y-m-d H:i:s'
+      
       Shop:
         fields:
           - id
@@ -277,7 +280,7 @@ class CountryController extends AbstractController
         foreach ($countries as $country) {
             $transformer = $this->objectToArrayTransformService->transform('api_fields.default', $country);
 
-            array_push($result, $transformer);
+            $result[] = $transformer;
         }
 
         return new JsonResponse($result);

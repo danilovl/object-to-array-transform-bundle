@@ -11,6 +11,8 @@ use Traversable;
 
 class ObjectToArrayTransformService implements ObjectToArrayTransformServiceInterface
 {
+    private const DEFAULT_DATE_FORMAT = 'Y-m-d H:i:s';
+
     public function __construct(private ParameterServiceInterface $parameterService)
     {
     }
@@ -21,10 +23,10 @@ class ObjectToArrayTransformService implements ObjectToArrayTransformServiceInte
         array $objectFields = null
     ): array {
         $result = [];
-
         $fieldValueClass = (new ReflectionClass($object))->getShortName();
-        $objectFields = $objectFields ?? $this->parameterService
-                ->get("{$source}.{$fieldValueClass}.fields");
+
+        $sourceParameters = $this->parameterService->get("{$source}.parameters", true) ?? [];
+        $objectFields = $objectFields ?? $this->parameterService->get("{$source}.{$fieldValueClass}.fields");
 
         if ($objectFields === null) {
             throw new RuntimeException(sprintf('Object fields for class "%s" is not defined for transformation.', $fieldValueClass));
@@ -78,7 +80,10 @@ class ObjectToArrayTransformService implements ObjectToArrayTransformServiceInte
                 }
             } else {
                 if ($fieldValue instanceof DateTime) {
-                    $fieldValue = $fieldValue->format($fieldParameters['format']);
+                    $dateFormat = $sourceParameters['date_format'] ?? null;
+                    $dateFormat = $dateFormat ?? $fieldParameters['format'] ??  self::DEFAULT_DATE_FORMAT;
+
+                    $fieldValue = $fieldValue->format($dateFormat);
                 }
 
                 $result[$field] = $fieldValue;
