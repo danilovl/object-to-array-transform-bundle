@@ -9,7 +9,7 @@ use Danilovl\ObjectToArrayTransformBundle\Tests\Mock\Model\{
     Shop,
     User
 };
-use Danilovl\ParameterBundle\Services\ParameterService;
+use Danilovl\ParameterBundle\Service\ParameterService;
 use Generator;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBag;
