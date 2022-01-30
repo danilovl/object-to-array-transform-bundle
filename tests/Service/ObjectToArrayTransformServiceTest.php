@@ -1,11 +1,13 @@
 <?php declare(strict_types=1);
 
-namespace Danilovl\ParameterBundle\Tests\Services;
+namespace Danilovl\ParameterBundle\Tests\Service;
 
-use Danilovl\ObjectToArrayTransformBundle\Services\ObjectToArrayTransformService;
+use Danilovl\ObjectToArrayTransformBundle\Service\ObjectToArrayTransformService;
 use Danilovl\ObjectToArrayTransformBundle\Tests\Mock\Model\{
     City,
-    Shop
+    IssetField,
+    Shop,
+    User
 };
 use Danilovl\ParameterBundle\Services\ParameterService;
 use Generator;
@@ -44,6 +46,8 @@ class ObjectToArrayTransformServiceTest extends TestCase
         yield ['id', $this->getShopModel(), ['id' => 33, 'city' => ['id' => 500]]];
         yield ['name', $this->getShopModel(), ['name' => 'Apple', 'city' => ['name' => 'London']]];
         yield ['all', $this->getShopModel(), ['id' => 33, 'name' => 'Apple', 'city' => ['id' => 500, 'name' => 'London', 'latitude' => 54.3434343, 'longitude' => 55.33342545]]];
+        yield ['all', $this->getUserModel(), ['id' => 15, 'username' => 'transformer', 'email' => 'user@gmail.com']];
+        yield ['all', $this->getIssetFieldModel(), ['id' => 100, 'value' => 'value']];
     }
 
     private function getParameterBagData(): array
@@ -71,6 +75,12 @@ class ObjectToArrayTransformServiceTest extends TestCase
                 ],
                 'City' => [
                     'fields' => ['id', 'name', 'latitude', 'longitude']
+                ],
+                'User' => [
+                    'fields' => ['id', 'username', 'email']
+                ],
+                'IssetField' => [
+                    'fields' => ['id', 'value']
                 ]
             ],
         ];
@@ -84,5 +94,15 @@ class ObjectToArrayTransformServiceTest extends TestCase
     private function getCityModel(): City
     {
         return new City(500, 'London', 54.3434343, 55.33342545);
+    }
+
+    private function getUserModel(): User
+    {
+        return new User(15, 'transformer', 'user@gmail.com');
+    }
+
+    private function getIssetFieldModel(): IssetField
+    {
+        return new IssetField(100, 'value');
     }
 }

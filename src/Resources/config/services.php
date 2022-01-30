@@ -2,7 +2,7 @@
 
 namespace Symfony\Component\DependencyInjection\Loader\Configurator;
 
-use Danilovl\ObjectToArrayTransformBundle\Services\ObjectToArrayTransformService;
+use Danilovl\ObjectToArrayTransformBundle\Service\ObjectToArrayTransformService;
 
 return static function (ContainerConfigurator $container): void {
     $container->services()

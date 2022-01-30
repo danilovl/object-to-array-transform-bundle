@@ -258,11 +258,16 @@ Transform objects in controller.
 
 namespace App\Controller\Api;
 
+use Danilovl\ObjectToArrayTransformBundle\Interfaces\ObjectToArrayTransformServiceInterface;
 use Knp\Component\Pager\Pagination\PaginationInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 class CountryController extends AbstractController
 {
+    public function __construct(private ObjectToArrayTransformServiceInterface $objectToArrayTransformService)
+    {
+    }
+
     public function getMethod(): JsonResponse
     {
         $countries = $this->get('app.facade.country')
@@ -270,8 +275,7 @@ class CountryController extends AbstractController
 
         $result = [];
         foreach ($countries as $country) {
-            $transformer = $this->get('danilovl.object_to_array_transform')
-                ->transform('api_fields.default', $country);
+            $transformer = $this->objectToArrayTransformService->transform('api_fields.default', $country);
 
             array_push($result, $transformer);
         }

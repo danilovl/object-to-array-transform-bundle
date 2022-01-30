@@ -1,8 +1,8 @@
 services:
   danilovl.object_to_array_transform:
-    class: Danilovl\ObjectToArrayTransformBundle\Services\ObjectToArrayTransformService
+    class: Danilovl\ObjectToArrayTransformBundle\Service\ObjectToArrayTransformService
     arguments:
       - '@danilovl.parameter'
     public: true
 
-  Danilovl\ObjectToArrayTransformBundle\Services\ObjectToArrayTransformService: '@danilovl.object_to_array_transform'
+  Danilovl\ObjectToArrayTransformBundle\Service\ObjectToArrayTransformService: '@danilovl.object_to_array_transform'
