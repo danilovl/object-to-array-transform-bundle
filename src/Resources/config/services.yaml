@@ -1,8 +1,6 @@
 services:
-  danilovl.object_to_array_transform:
-    class: Danilovl\ObjectToArrayTransformBundle\Service\ObjectToArrayTransformService
-    arguments:
-      - '@danilovl.parameter'
+  Danilovl\ObjectToArrayTransformBundle\Service\ObjectToArrayTransformService:
+    autowire: true
     public: true
 
-  Danilovl\ObjectToArrayTransformBundle\Service\ObjectToArrayTransformService: '@danilovl.object_to_array_transform'
+  Danilovl\ObjectToArrayTransformBundle\Interfaces\ObjectToArrayTransformServiceInterface: '@Danilovl\ObjectToArrayTransformBundle\Service\ObjectToArrayTransformService'
