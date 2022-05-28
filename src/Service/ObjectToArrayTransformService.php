@@ -13,7 +13,7 @@ class ObjectToArrayTransformService implements ObjectToArrayTransformServiceInte
 {
     private const DEFAULT_DATE_FORMAT = 'Y-m-d H:i:s';
 
-    public function __construct(private ParameterServiceInterface $parameterService)
+    public function __construct(private readonly ParameterServiceInterface $parameterService)
     {
     }
 
