@@ -13,9 +13,7 @@ class ObjectToArrayTransformService implements ObjectToArrayTransformServiceInte
 {
     private const DEFAULT_DATE_FORMAT = 'Y-m-d H:i:s';
 
-    public function __construct(private readonly ParameterServiceInterface $parameterService)
-    {
-    }
+    public function __construct(private readonly ParameterServiceInterface $parameterService) {}
 
     public function transform(
         string $source,
@@ -25,8 +23,8 @@ class ObjectToArrayTransformService implements ObjectToArrayTransformServiceInte
         $result = [];
         $fieldValueClass = (new ReflectionClass($object))->getShortName();
 
-        $sourceParameters = $this->parameterService->get("{$source}.parameters", true) ?? [];
-        $objectFields = $objectFields ?? $this->parameterService->get("{$source}.{$fieldValueClass}.fields");
+        $sourceParameters = $this->parameterService->get(key: "{$source}.parameters", ignoreNotFound: true) ?? [];
+        $objectFields = $objectFields ?? $this->parameterService->get(key: "{$source}.{$fieldValueClass}.fields");
 
         if ($objectFields === null) {
             throw new RuntimeException(sprintf('Object fields for class "%s" is not defined for transformation.', $fieldValueClass));
@@ -81,7 +79,7 @@ class ObjectToArrayTransformService implements ObjectToArrayTransformServiceInte
             } else {
                 if ($fieldValue instanceof DateTime) {
                     $dateFormat = $sourceParameters['date_format'] ?? null;
-                    $dateFormat = $dateFormat ?? $fieldParameters['format'] ??  self::DEFAULT_DATE_FORMAT;
+                    $dateFormat = $dateFormat ?? $fieldParameters['format'] ?? self::DEFAULT_DATE_FORMAT;
 
                     $fieldValue = $fieldValue->format($dateFormat);
                 }
