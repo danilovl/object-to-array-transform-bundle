@@ -9,11 +9,11 @@ use ReflectionClass;
 use RuntimeException;
 use Traversable;
 
-class ObjectToArrayTransformService implements ObjectToArrayTransformServiceInterface
+readonly class ObjectToArrayTransformService implements ObjectToArrayTransformServiceInterface
 {
     private const DEFAULT_DATE_FORMAT = 'Y-m-d H:i:s';
 
-    public function __construct(private readonly ParameterServiceInterface $parameterService) {}
+    public function __construct(private ParameterServiceInterface $parameterService) {}
 
     public function transform(
         string $source,
