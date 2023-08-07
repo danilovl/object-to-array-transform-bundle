@@ -4,13 +4,14 @@ namespace Danilovl\ParameterBundle\Tests\Service;
 
 use Danilovl\ObjectToArrayTransformBundle\Service\ObjectToArrayTransformService;
 use Danilovl\ObjectToArrayTransformBundle\Tests\Mock\Model\{
+    User,
     City,
-    IssetField,
     Shop,
-    User
+    IssetField
 };
 use Danilovl\ParameterBundle\Service\ParameterService;
 use Generator;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBag;
 
@@ -25,9 +26,7 @@ class ObjectToArrayTransformServiceTest extends TestCase
         $this->objectToArrayTransformService = new ObjectToArrayTransformService($parameterService);
     }
 
-    /**
-     * @dataProvider dataTransform
-     */
+    #[DataProvider('dataTransform')]
     public function testTransform(
         string $source,
         string|object $object,
@@ -41,16 +40,16 @@ class ObjectToArrayTransformServiceTest extends TestCase
         $this->assertEquals($expectedValue, $value);
     }
 
-    public function dataTransform(): Generator
+    public static function dataTransform(): Generator
     {
-        yield ['id', $this->getShopModel(), ['id' => 33, 'city' => ['id' => 500]]];
-        yield ['name', $this->getShopModel(), ['name' => 'Apple', 'city' => ['name' => 'London']]];
-        yield ['all', $this->getShopModel(), ['id' => 33, 'name' => 'Apple', 'city' => ['id' => 500, 'name' => 'London', 'latitude' => 54.3434343, 'longitude' => 55.33342545]]];
-        yield ['all', $this->getUserModel(), ['id' => 15, 'username' => 'transformer', 'email' => 'user@gmail.com']];
-        yield ['all', $this->getIssetFieldModel(), ['id' => 100, 'value' => 'value']];
+        yield ['id', self::getShopModel(), ['id' => 33, 'city' => ['id' => 500]]];
+        yield ['name', self::getShopModel(), ['name' => 'Apple', 'city' => ['name' => 'London']]];
+        yield ['all', self::getShopModel(), ['id' => 33, 'name' => 'Apple', 'city' => ['id' => 500, 'name' => 'London', 'latitude' => 54.3434343, 'longitude' => 55.33342545]]];
+        yield ['all', self::getUserModel(), ['id' => 15, 'username' => 'transformer', 'email' => 'user@gmail.com']];
+        yield ['all', self::getIssetFieldModel(), ['id' => 100, 'value' => 'value']];
     }
 
-    private function getParameterBagData(): array
+    private static function getParameterBagData(): array
     {
         return [
             'id' => [
@@ -86,22 +85,22 @@ class ObjectToArrayTransformServiceTest extends TestCase
         ];
     }
 
-    private function getShopModel(): object
+    private static function getShopModel(): object
     {
-        return new Shop(33, 'Apple', $this->getCityModel());
+        return new Shop(33, 'Apple', self::getCityModel());
     }
 
-    private function getCityModel(): City
+    private static function getCityModel(): City
     {
         return new City(500, 'London', 54.3434343, 55.33342545);
     }
 
-    private function getUserModel(): User
+    private static function getUserModel(): User
     {
         return new User(15, 'transformer', 'user@gmail.com');
     }
 
-    private function getIssetFieldModel(): IssetField
+    private static function getIssetFieldModel(): IssetField
     {
         return new IssetField(100, 'value');
     }

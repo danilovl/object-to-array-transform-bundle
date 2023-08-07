@@ -21,10 +21,10 @@
     },
     "require": {
         "php": "^8.2.0",
-        "symfony/framework-bundle": "^6.2",
+        "symfony/framework-bundle": "^6.3",
         "danilovl/parameter-bundle": "^4.1.0"
     },
     "require-dev": {
-        "phpunit/phpunit": "^9.5"
+        "phpunit/phpunit": "^10.2"
     }
 }
