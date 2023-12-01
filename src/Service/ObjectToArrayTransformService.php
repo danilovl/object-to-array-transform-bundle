@@ -11,7 +11,7 @@ use Traversable;
 
 readonly class ObjectToArrayTransformService implements ObjectToArrayTransformServiceInterface
 {
-    private const DEFAULT_DATE_FORMAT = 'Y-m-d H:i:s';
+    private const string DEFAULT_DATE_FORMAT = 'Y-m-d H:i:s';
 
     public function __construct(private ParameterServiceInterface $parameterService) {}
 
