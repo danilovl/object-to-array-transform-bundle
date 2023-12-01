@@ -12,8 +12,8 @@ Symfony bundle provides convert object to an array by configuration fields.
 ### Requirements 
 
   * PHP 8.3 or higher
-  * Symfony 6.3 or higher
-  * ParameterBundle 3.3 or higher
+  * Symfony 7.0 or higher
+  * ParameterBundle 5.0 or higher
 
 ### 1. Installation
 
