@@ -24,6 +24,7 @@ readonly class ObjectToArrayTransformService implements ObjectToArrayTransformSe
         $fieldValueClass = (new ReflectionClass($object))->getShortName();
 
         $sourceParameters = $this->parameterService->get(key: "{$source}.parameters", ignoreNotFound: true) ?? [];
+        /** @var array|null $objectFields */
         $objectFields = $objectFields ?? $this->parameterService->get(key: "{$source}.{$fieldValueClass}.fields");
 
         if ($objectFields === null) {
@@ -51,10 +52,14 @@ readonly class ObjectToArrayTransformService implements ObjectToArrayTransformSe
             $getMethod = $fieldParameters['method'] ?? 'get' . ucfirst($field);
 
             if (method_exists($object, $field)) {
-                $fieldValue = call_user_func_array([$object, $field], []);
+                /** @var callable $callable */
+                $callable = [$object, $field];
+                $fieldValue = call_user_func_array($callable, []);
                 $isFieldExist = true;
             } elseif (method_exists($object, $getMethod)) {
-                $fieldValue = call_user_func_array([$object, $getMethod], []);
+                /** @var callable $callable */
+                $callable = [$object, $getMethod];
+                $fieldValue = call_user_func_array($callable, []);
                 $isFieldExist = true;
             } elseif (in_array($field, $objectFields, true) || isset($object->{$field})) {
                 $fieldValue = $object->{$field};
