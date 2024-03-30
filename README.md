@@ -20,7 +20,7 @@ Symfony bundle provides convert object to an array by configuration fields.
 Install `danilovl/object-to-array-transform-bundle` package by Composer:
  
 ``` bash
-$ composer require danilovl/object-to-array-transform-bundle
+composer require danilovl/object-to-array-transform-bundle
 ```
 Add the `ObjectToArrayTransformBundle` to your application's bundles if does not add automatically:
 
