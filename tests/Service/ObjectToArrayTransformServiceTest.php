@@ -19,7 +19,7 @@ class ObjectToArrayTransformServiceTest extends TestCase
 {
     private ObjectToArrayTransformService $objectToArrayTransformService;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $parameterBug = new ParameterBag($this->getParameterBagData());
         $parameterService = new ParameterService($parameterBug);
@@ -44,7 +44,7 @@ class ObjectToArrayTransformServiceTest extends TestCase
     {
         yield ['id', self::getShopModel(), ['id' => 33, 'city' => ['id' => 500]]];
         yield ['name', self::getShopModel(), ['name' => 'Apple', 'city' => ['name' => 'London']]];
-        yield ['all', self::getShopModel(), ['id' => 33, 'name' => 'Apple', 'city' => ['id' => 500, 'name' => 'London', 'latitude' => 54.3434343, 'longitude' => 55.33342545]]];
+        yield ['all', self::getShopModel(), ['id' => 33, 'name' => 'Apple', 'city' => ['id' => 500, 'name' => 'London', 'latitude' => 54.343_434_3, 'longitude' => 55.333_425_45]]];
         yield ['all', self::getUserModel(), ['id' => 15, 'username' => 'transformer', 'email' => 'user@gmail.com']];
         yield ['all', self::getIssetFieldModel(), ['id' => 100, 'value' => 'value']];
     }
@@ -92,7 +92,7 @@ class ObjectToArrayTransformServiceTest extends TestCase
 
     private static function getCityModel(): City
     {
-        return new City(500, 'London', 54.3434343, 55.33342545);
+        return new City(500, 'London', 54.343_434_3, 55.333_425_45);
     }
 
     private static function getUserModel(): User

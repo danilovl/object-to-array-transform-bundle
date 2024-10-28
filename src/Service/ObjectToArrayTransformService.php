@@ -25,7 +25,7 @@ readonly class ObjectToArrayTransformService implements ObjectToArrayTransformSe
 
         $sourceParameters = $this->parameterService->get(key: "{$source}.parameters", ignoreNotFound: true) ?? [];
         /** @var array|null $objectFields */
-        $objectFields = $objectFields ?? $this->parameterService->get(key: "{$source}.{$fieldValueClass}.fields");
+        $objectFields ??= $this->parameterService->get(key: "{$source}.{$fieldValueClass}.fields");
 
         if ($objectFields === null) {
             throw new RuntimeException(sprintf('Object fields for class "%s" is not defined for transformation.', $fieldValueClass));
@@ -84,7 +84,7 @@ readonly class ObjectToArrayTransformService implements ObjectToArrayTransformSe
             } else {
                 if ($fieldValue instanceof DateTime) {
                     $dateFormat = $sourceParameters['date_format'] ?? null;
-                    $dateFormat = $dateFormat ?? $fieldParameters['format'] ?? self::DEFAULT_DATE_FORMAT;
+                    $dateFormat ??= $fieldParameters['format'] ?? self::DEFAULT_DATE_FORMAT;
 
                     $fieldValue = $fieldValue->format($dateFormat);
                 }
