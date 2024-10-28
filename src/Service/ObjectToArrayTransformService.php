@@ -23,15 +23,14 @@ readonly class ObjectToArrayTransformService implements ObjectToArrayTransformSe
         $result = [];
         $fieldValueClass = (new ReflectionClass($object))->getShortName();
 
-        $sourceParameters = $this->parameterService->get(key: "{$source}.parameters", ignoreNotFound: true) ?? [];
-        /** @var array|null $objectFields */
-        $objectFields ??= $this->parameterService->get(key: "{$source}.{$fieldValueClass}.fields");
+        $sourceParameters = $this->parameterService->getArrayOrNull(key: "{$source}.parameters");
+        $objectFields ??= $this->parameterService->getArrayOrNull(key: "{$source}.{$fieldValueClass}.fields");
 
         if ($objectFields === null) {
             throw new RuntimeException(sprintf('Object fields for class "%s" is not defined for transformation.', $fieldValueClass));
         }
 
-        $objectsName = $this->parameterService->get($source);
+        $objectsName = $this->parameterService->getArray($source);
 
         foreach ($objectFields as $objectField) {
             $field = $objectField;
