@@ -4,7 +4,7 @@ namespace Danilovl\ObjectToArrayTransformBundle\Service;
 
 use Danilovl\ObjectToArrayTransformBundle\Interfaces\ObjectToArrayTransformServiceInterface;
 use Danilovl\ParameterBundle\Interfaces\ParameterServiceInterface;
-use DateTime;
+use DateTimeInterface;
 use ReflectionClass;
 use RuntimeException;
 use Traversable;
@@ -82,7 +82,7 @@ readonly class ObjectToArrayTransformService implements ObjectToArrayTransformSe
                     $result[$field][] = $this->transform($source, $itemV, $subFields);
                 }
             } else {
-                if ($fieldValue instanceof DateTime) {
+                if ($fieldValue instanceof DateTimeInterface) {
                     $dateFormat = $sourceParameters['date_format'] ?? null;
                     $dateFormat ??= $fieldParameters['format'] ?? self::DEFAULT_DATE_FORMAT;
 
