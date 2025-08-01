@@ -26,7 +26,7 @@ class ObjectToArrayTransformServiceTest extends TestCase
         $this->objectToArrayTransformService = new ObjectToArrayTransformService($parameterService);
     }
 
-    #[DataProvider('dataTransform')]
+    #[DataProvider('provideTransformCases')]
     public function testTransform(
         string $source,
         string|object $object,
@@ -40,7 +40,7 @@ class ObjectToArrayTransformServiceTest extends TestCase
         $this->assertEquals($expectedValue, $value);
     }
 
-    public static function dataTransform(): Generator
+    public static function provideTransformCases(): Generator
     {
         yield ['id', self::getShopModel(), ['id' => 33, 'city' => ['id' => 500]]];
         yield ['name', self::getShopModel(), ['name' => 'Apple', 'city' => ['name' => 'London']]];
