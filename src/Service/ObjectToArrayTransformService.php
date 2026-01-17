@@ -39,6 +39,7 @@ readonly class ObjectToArrayTransformService implements ObjectToArrayTransformSe
             $subFields = null;
             if (is_array($objectField)) {
                 /** @var array<string, array<string, array>> $objectField */
+                /** @var string $field */
                 $field = array_key_first($objectField);
                 $subFields = $objectField[$field]['fields'] ?? null;
                 $fieldParameters = $objectField[$field]['parameters'] ?? null;
