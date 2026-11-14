@@ -9,16 +9,16 @@
 
 Symfony bundle provides convert object to an array by configuration fields.
 
-### Requirements 
+### Requirements
 
-  * PHP 8.5 or higher
-  * Symfony 8.0 or higher
-  * ParameterBundle 5.0 or higher
+* PHP 8.5 or higher
+* Symfony 8.0 or higher
+* ParameterBundle 5.0 or higher
 
 ### 1. Installation
 
 Install `danilovl/object-to-array-transform-bundle` package by Composer:
- 
+
 ``` bash
 composer require danilovl/object-to-array-transform-bundle
 ```
@@ -36,9 +36,15 @@ return [
 
 ### 2. Configuration
 
-Each object must have declare `get` method for field defined in parameters.
+Configuration is grouped by source (for example `api_fields.default`). Inside the source each key is the short class name of the object (`Shop`, `City`) and contains the list of `fields` to export.
 
-Each field defined in `parameters` must match the name of the object.
+For each field the value is resolved in the following order:
+
+1. method with the same name as the field (`name()`);
+2. method from the field `method` parameter or the `get` method (`getName()`);
+3. public property or a property available through `__get`/`__isset`.
+
+If none of them exists, `RuntimeException` is thrown.
 
 For example:
 
@@ -199,7 +205,7 @@ parameters:
         fields:
           - id
           - name
-          - city:
+          - city
       City:
         fields:
           - id
@@ -214,9 +220,11 @@ parameters:
           - cities
 ```
 
-If necessary to change `fields` for `cities`.
+Objects whose class is configured in the source are transformed recursively with their own `fields`.
 
-You can specify the format for `DateTime`.
+To change `fields` for a nested object or for the items of a collection, define them directly on the field.
+
+You can specify the format for `DateTimeInterface` values.
 
 ```yaml
 # config/services.yaml
@@ -246,16 +254,30 @@ parameters:
           - id
           - name
           - code
-          - cities
-            fields:
+          - cities:
+              fields:
                 - id
-                  - name
-                  - createdAt:
-                      parameters:
-                        format: 'Y-m-d'
+                - name
+                - createdAt:
+                    parameters:
+                      format: 'Y-m-d'
 ```
-   
-#### 2.1 Usage
+
+#### 2.1 Transformation rules
+
+* **Date format** for `DateTimeInterface` values is chosen in the following order:
+    1. field parameter `format`;
+    2. source parameter `date_format`;
+    3. default `Y-m-d H:i:s`.
+* **Collections** (any `Traversable`, for example Doctrine `Collection`) are transformed to a list:
+    * an empty collection is returned as an empty array `[]`;
+    * objects are transformed by their configuration;
+    * scalar values are returned as is.
+* **Circular references** (for example `Product → Category → products → Product`) throw `RuntimeException` with message `Circular reference detected for class "..."`. The same object in different branches (for example twice in one collection) is not a circular reference.
+* **Maximum depth** of nested objects is `32`. Deeper nesting throws `RuntimeException`.
+* If the object is passed as a class name string and the class does not exist, `RuntimeException` is thrown.
+
+#### 2.2 Usage
 
 Transform objects in controller.
 
@@ -264,20 +286,21 @@ Transform objects in controller.
 
 namespace App\Controller\Api;
 
+use App\Facade\CountryFacade;
 use Danilovl\ObjectToArrayTransformBundle\Interfaces\ObjectToArrayTransformServiceInterface;
-use Knp\Component\Pager\Pagination\PaginationInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
 
 class CountryController extends AbstractController
 {
-    public function __construct(private ObjectToArrayTransformServiceInterface $objectToArrayTransformService)
-    {
-    }
+    public function __construct(
+        private readonly CountryFacade $countryFacade,
+        private readonly ObjectToArrayTransformServiceInterface $objectToArrayTransformService
+    ) {}
 
     public function getMethod(): JsonResponse
     {
-        $countries = $this->get('app.facade.country')
-            ->getAll();
+        $countries = $this->countryFacade->getAll();
 
         $result = [];
         foreach ($countries as $country) {

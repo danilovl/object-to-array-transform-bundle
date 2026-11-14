@@ -3,16 +3,22 @@
 namespace Danilovl\ParameterBundle\Tests\Service;
 
 use Danilovl\ObjectToArrayTransformBundle\Service\ObjectToArrayTransformService;
+use ArrayIterator;
 use Danilovl\ObjectToArrayTransformBundle\Tests\Mock\Model\{
+    Category,
+    Node,
+    Product,
     User,
     City,
     Shop,
     IssetField
 };
 use Danilovl\ParameterBundle\Service\ParameterService;
+use DateTimeImmutable;
 use Generator;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
+use RuntimeException;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBag;
 
 class ObjectToArrayTransformServiceTest extends TestCase
@@ -49,6 +55,120 @@ class ObjectToArrayTransformServiceTest extends TestCase
         yield ['all', self::getIssetFieldModel(), ['id' => 100, 'value' => 'value']];
     }
 
+    #[DataProvider('provideDateFormatPriorityCases')]
+    public function testDateFormatPriority(string $source, string $expectedDate): void
+    {
+        $value = $this->objectToArrayTransformService->transform($source, self::getProductModel());
+
+        $expected = ['createdAt' => $expectedDate];
+
+        $this->assertSame($expected, $value);
+    }
+
+    public static function provideDateFormatPriorityCases(): Generator
+    {
+        yield 'default format' => ['date_default', '2024-01-02 03:04:05'];
+        yield 'source format' => ['date_source', '02.01.2024'];
+        yield 'field format overrides source format' => ['date_field', '2024'];
+    }
+
+    public function testEmptyCollection(): void
+    {
+        $category = new Category('Empty');
+
+        $value = $this->objectToArrayTransformService->transform('collection', $category);
+
+        $expected = [
+            'title' => 'Empty',
+            'products' => []
+        ];
+
+        $this->assertSame($expected, $value);
+    }
+
+    public function testScalarCollection(): void
+    {
+        $product = new Product('Phone', self::getDate(), new ArrayIterator(['new', 'sale']));
+
+        $value = $this->objectToArrayTransformService->transform('collection', $product);
+
+        $expected = [
+            'name' => 'Phone',
+            'tags' => ['new', 'sale']
+        ];
+
+        $this->assertSame($expected, $value);
+    }
+
+    public function testObjectCollection(): void
+    {
+        $category = new Category('Phones');
+        $category->addProduct(new Product('Phone', self::getDate(), new ArrayIterator(['new'])));
+        $category->addProduct(new Product('Tablet', self::getDate()));
+
+        $value = $this->objectToArrayTransformService->transform('collection', $category);
+
+        $expected = [
+            'title' => 'Phones',
+            'products' => [
+                ['name' => 'Phone', 'tags' => ['new']],
+                ['name' => 'Tablet', 'tags' => []]
+            ]
+        ];
+
+        $this->assertSame($expected, $value);
+    }
+
+    public function testSameObjectInSiblingBranchesIsNotCircular(): void
+    {
+        $product = self::getProductModel();
+        $category = new Category('Phones');
+        $category->addProduct($product);
+        $category->addProduct($product);
+
+        $value = $this->objectToArrayTransformService->transform('collection', $category);
+
+        $this->assertCount(2, $value['products']);
+    }
+
+    public function testCircularReference(): void
+    {
+        $product = self::getProductModel();
+        $category = new Category('Phones');
+        $category->addProduct($product);
+        $product->category = $category;
+
+        $message = sprintf('Circular reference detected for class "%s".', Product::class);
+
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage($message);
+
+        $this->objectToArrayTransformService->transform('cycle', $product);
+    }
+
+    public function testMaxDepthNotExceeded(): void
+    {
+        $value = $this->objectToArrayTransformService->transform('depth', self::getNodeChain(32));
+
+        $this->assertSame(0, $value['id']);
+    }
+
+    public function testMaxDepthExceeded(): void
+    {
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage('Maximum transformation depth 32 exceeded.');
+
+        $this->objectToArrayTransformService->transform('depth', self::getNodeChain(33));
+    }
+
+    public function testClassNotExist(): void
+    {
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage('Class "NotExistClass" does not exist.');
+
+        $this->objectToArrayTransformService->transform('all', 'NotExistClass');
+    }
+
     private static function getParameterBagData(): array
     {
         return [
@@ -82,6 +202,50 @@ class ObjectToArrayTransformServiceTest extends TestCase
                     'fields' => ['id', 'value']
                 ]
             ],
+            'date_default' => [
+                'Product' => [
+                    'fields' => ['createdAt']
+                ]
+            ],
+            'date_source' => [
+                'parameters' => [
+                    'date_format' => 'd.m.Y'
+                ],
+                'Product' => [
+                    'fields' => ['createdAt']
+                ]
+            ],
+            'date_field' => [
+                'parameters' => [
+                    'date_format' => 'd.m.Y'
+                ],
+                'Product' => [
+                    'fields' => [
+                        ['createdAt' => ['parameters' => ['format' => 'Y']]]
+                    ]
+                ]
+            ],
+            'collection' => [
+                'Category' => [
+                    'fields' => ['title', 'products']
+                ],
+                'Product' => [
+                    'fields' => ['name', 'tags']
+                ]
+            ],
+            'cycle' => [
+                'Category' => [
+                    'fields' => ['title', 'products']
+                ],
+                'Product' => [
+                    'fields' => ['name', 'category']
+                ]
+            ],
+            'depth' => [
+                'Node' => [
+                    'fields' => ['id', 'child']
+                ]
+            ]
         ];
     }
 
@@ -103,5 +267,25 @@ class ObjectToArrayTransformServiceTest extends TestCase
     private static function getIssetFieldModel(): IssetField
     {
         return new IssetField(100, 'value');
+    }
+
+    private static function getDate(): DateTimeImmutable
+    {
+        return new DateTimeImmutable('2024-01-02 03:04:05');
+    }
+
+    private static function getProductModel(): Product
+    {
+        return new Product('Phone', self::getDate());
+    }
+
+    private static function getNodeChain(int $length): Node
+    {
+        $node = new Node($length - 1);
+        for ($id = $length - 2; $id >= 0; $id--) {
+            $node = new Node($id, $node);
+        }
+
+        return $node;
     }
 }

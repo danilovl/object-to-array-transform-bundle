@@ -13,6 +13,8 @@ readonly class ObjectToArrayTransformService implements ObjectToArrayTransformSe
 {
     private const string DEFAULT_DATE_FORMAT = 'Y-m-d H:i:s';
 
+    private const int MAX_DEPTH = 32;
+
     public function __construct(private ParameterServiceInterface $parameterService) {}
 
     public function transform(
@@ -20,6 +22,41 @@ readonly class ObjectToArrayTransformService implements ObjectToArrayTransformSe
         string|object $object,
         ?array $objectFields = null
     ): array {
+        return $this->transformObject($source, $object, $objectFields, []);
+    }
+
+    /**
+     * @param array<int, true> $parentObjectIds
+     */
+    private function transformObject(
+        string $source,
+        string|object $object,
+        ?array $objectFields,
+        array $parentObjectIds
+    ): array {
+        if (count($parentObjectIds) >= self::MAX_DEPTH) {
+            $message = sprintf('Maximum transformation depth %d exceeded.', self::MAX_DEPTH);
+
+            throw new RuntimeException($message);
+        }
+
+        if (is_string($object) && !class_exists($object)) {
+            $message = sprintf('Class "%s" does not exist.', $object);
+
+            throw new RuntimeException($message);
+        }
+
+        if (is_object($object)) {
+            $objectId = spl_object_id($object);
+            if (isset($parentObjectIds[$objectId])) {
+                $message = sprintf('Circular reference detected for class "%s".', $object::class);
+
+                throw new RuntimeException($message);
+            }
+
+            $parentObjectIds[$objectId] = true;
+        }
+
         $result = [];
         $fieldValueClass = (new ReflectionClass($object))->getShortName();
 
@@ -27,7 +64,9 @@ readonly class ObjectToArrayTransformService implements ObjectToArrayTransformSe
         $objectFields ??= $this->parameterService->getArrayOrNull(key: "{$source}.{$fieldValueClass}.fields");
 
         if ($objectFields === null) {
-            throw new RuntimeException(sprintf('Object fields for class "%s" is not defined for transformation.', $fieldValueClass));
+            $message = sprintf('Object fields for class "%s" is not defined for transformation.', $fieldValueClass);
+
+            throw new RuntimeException($message);
         }
 
         $objectsName = $this->parameterService->getArray($source);
@@ -45,8 +84,8 @@ readonly class ObjectToArrayTransformService implements ObjectToArrayTransformSe
                 $fieldParameters = $objectField[$field]['parameters'] ?? null;
             }
 
-            $objectFieldsValue = get_class_vars(is_object($object) ? get_class($object) : $object);
-            $objectFields = array_keys($objectFieldsValue);
+            $classVars = get_class_vars(is_object($object) ? get_class($object) : $object);
+            $classFields = array_keys($classVars);
 
             $isFieldExist = false;
             $fieldValue = null;
@@ -62,13 +101,15 @@ readonly class ObjectToArrayTransformService implements ObjectToArrayTransformSe
                 $callable = [$object, $getMethod];
                 $fieldValue = call_user_func_array($callable, []);
                 $isFieldExist = true;
-            } elseif (in_array($field, $objectFields, true) || isset($object->{$field})) {
+            } elseif (in_array($field, $classFields, true) || isset($object->{$field})) {
                 $fieldValue = $object->{$field};
                 $isFieldExist = true;
             }
 
             if ($isFieldExist === false) {
-                throw new RuntimeException(sprintf('Can not find public field or get method for field "%s".', $field));
+                $message = sprintf('Can not find public field or get method for field "%s".', $field);
+
+                throw new RuntimeException($message);
             }
 
             $fieldValueClass = null;
@@ -77,15 +118,19 @@ readonly class ObjectToArrayTransformService implements ObjectToArrayTransformSe
             }
 
             if ($fieldValueClass !== null && isset($objectsName[$fieldValueClass])) {
-                $result[$field] = $this->transform($source, $fieldValue, $subFields);
+                $result[$field] = $this->transformObject($source, $fieldValue, $subFields, $parentObjectIds);
             } elseif ($fieldValue instanceof Traversable) {
-                foreach ($fieldValue as $itemV) {
-                    $result[$field][] = $this->transform($source, $itemV, $subFields);
+                $result[$field] = [];
+                foreach ($fieldValue as $itemValue) {
+                    $result[$field][] = is_object($itemValue)
+                        ? $this->transformObject($source, $itemValue, $subFields, $parentObjectIds)
+                        : $itemValue;
                 }
             } else {
                 if ($fieldValue instanceof DateTimeInterface) {
-                    $dateFormat = $sourceParameters['date_format'] ?? null;
-                    $dateFormat ??= $fieldParameters['format'] ?? self::DEFAULT_DATE_FORMAT;
+                    $dateFormat = $fieldParameters['format']
+                        ?? $sourceParameters['date_format']
+                        ?? self::DEFAULT_DATE_FORMAT;
 
                     $fieldValue = $fieldValue->format($dateFormat);
                 }
